@@ -4,26 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MoneyHero Member Dashboard — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f6f8; color: #1a1a2e; }
   #pw-gate { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
   .pw-box { text-align: center; max-width: 340px; padding: 40px 20px; }
-  .pw-box .pw-logo { font-weight: 800; font-size: 24px; margin-bottom: 8px; }
-  .pw-box .pw-logo span:first-child { color: #e4002b; }
-  .pw-box .pw-logo span:last-child { color: #00b2a9; }
+  .pw-box .pw-logo { margin-bottom: 8px; }
+  .pw-box .pw-logo img { height: 28px; }
   .pw-box p { font-size: 14px; color: #666; margin-bottom: 20px; }
   .pw-box input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; text-align: center; outline: none; }
-  .pw-box input:focus { border-color: #0066cc; }
-  .pw-box button { width: 100%; padding: 12px; margin-top: 12px; background: #0066cc; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .pw-box button:hover { background: #004999; }
+  .pw-box input:focus { border-color: #2257B8; }
+  .pw-box button { width: 100%; padding: 12px; margin-top: 12px; background: #2257B8; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .pw-box button:hover { background: #1a4494; }
   .pw-err { color: #e4002b; font-size: 13px; margin-top: 8px; min-height: 20px; }
 
   /* Nav */
   .top-nav { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .top-nav .logo { font-weight: 800; font-size: 18px; }
-  .top-nav .logo span:first-child { color: #e4002b; }
-  .top-nav .logo span:last-child { color: #00b2a9; }
+  .top-nav .logo img { height: 24px; }
   .nav-items { display: flex; gap: 16px; align-items: center; font-size: 13px; color: #666; }
   .nav-items a { text-decoration: none; color: #666; }
   .nav-items a:hover { color: #1a1a1a; }
@@ -46,18 +45,18 @@
   .page.active { display: block; }
 
   /* Member header */
-  .member-header { background: linear-gradient(135deg, #0066cc 0%, #004999 100%); color: #fff; padding: 24px 20px; }
+  .member-header { background: linear-gradient(135deg, #2257B8 0%, #1a4494 100%); color: #fff; padding: 24px 20px; }
   .member-header .label { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
   .member-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
   .member-header .email { font-size: 14px; opacity: 0.7; }
 
   /* Cards */
   .card-stack { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer; transition: box-shadow 0.2s; position: relative; }
-  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); cursor: pointer; transition: box-shadow 0.2s; position: relative; }
+  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04); }
   .card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; }
   .card-icon.reward { background: #e8f5e9; color: #2e7d32; }
-  .card-icon.credit { background: #e3f2fd; color: #1565c0; }
+  .card-icon.credit { background: #e3f2fd; color: #2257B8; }
   .card-icon.profile { background: #f3e5f5; color: #7b1fa2; }
   .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
   .card p { font-size: 14px; color: #666; line-height: 1.5; }
@@ -72,25 +71,25 @@
   /* Credit score module */
   .score-card { background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%); border: 1px solid #dde3f8; }
   .score-display { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; }
-  .score-circle { width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#1565c0 0% 72%, #e0e0e0 72% 100%); display: flex; align-items: center; justify-content: center; position: relative; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#2257B8 0% 72%, #e0e0e0 72% 100%); display: flex; align-items: center; justify-content: center; position: relative; }
   .score-circle-inner { width: 64px; height: 64px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-  .score-number { font-size: 22px; font-weight: 700; color: #1565c0; line-height: 1; }
+  .score-number { font-size: 22px; font-weight: 700; color: #2257B8; line-height: 1; }
   .score-label { font-size: 9px; color: #999; text-transform: uppercase; }
   .score-meta h3 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
   .score-delta { font-size: 13px; color: #2e7d32; font-weight: 500; margin-top: 2px; }
   .score-updated { font-size: 12px; color: #999; margin-top: 2px; }
   .score-actions { display: flex; gap: 8px; margin-top: 4px; }
-  .score-actions a { font-size: 13px; color: #1565c0; text-decoration: none; font-weight: 500; }
+  .score-actions a { font-size: 13px; color: #2257B8; text-decoration: none; font-weight: 500; }
   .score-actions a:hover { text-decoration: underline; }
   .odds-teaser { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 13px; color: #5d4037; display: flex; align-items: center; gap: 8px; }
   .odds-teaser .odds-badge { background: #2e7d32; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
 
   /* CHC CTA card (non-member) */
-  .chc-cta-card { background: linear-gradient(135deg, #004999 0%, #0066cc 100%); color: #fff; border: none; }
+  .chc-cta-card { background: linear-gradient(135deg, #1a4494 0%, #2257B8 100%); color: #fff; border: none; }
   .chc-cta-card h3 { color: #fff; font-size: 18px; }
   .chc-cta-card p { color: rgba(255,255,255,0.85); }
   .chc-cta-card .tu-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; }
-  .chc-cta-card .cta-btn { display: inline-block; margin-top: 14px; background: #fff; color: #004999; font-weight: 600; font-size: 14px; padding: 10px 24px; border-radius: 8px; text-decoration: none; }
+  .chc-cta-card .cta-btn { display: inline-block; margin-top: 14px; background: #fff; color: #2257B8; font-weight: 600; font-size: 14px; padding: 10px 24px; border-radius: 8px; text-decoration: none; }
 
   /* Carousel */
   .carousel { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; }
@@ -106,7 +105,7 @@
   .carousel-banner-content p { font-size: 13px; color: #555; }
   .carousel-dots { display: flex; justify-content: center; gap: 6px; padding: 12px; }
   .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; border: none; cursor: pointer; transition: background 0.2s; }
-  .carousel-dot.active { background: #0066cc; }
+  .carousel-dot.active { background: #2257B8; }
 
   /* Logout */
   .logout-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 16px 20px; text-align: center; color: #e4002b; font-size: 15px; font-weight: 500; cursor: pointer; width: 100%; transition: background 0.2s; }
@@ -114,13 +113,13 @@
 
   /* Applications & Rewards detail page */
   .detail-header { background: #fff; padding: 16px 20px; border-bottom: 1px solid #e0e0e0; }
-  .back-link { font-size: 14px; color: #0066cc; text-decoration: none; display: flex; align-items: center; gap: 4px; margin-bottom: 12px; cursor: pointer; }
+  .back-link { font-size: 14px; color: #2257B8; text-decoration: none; display: flex; align-items: center; gap: 4px; margin-bottom: 12px; cursor: pointer; }
   .detail-header h2 { font-size: 20px; font-weight: 600; }
 
   /* Tabs */
   .tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; }
   .tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-  .tab.active { color: #0066cc; border-bottom-color: #0066cc; font-weight: 600; }
+  .tab.active { color: #2257B8; border-bottom-color: #2257B8; font-weight: 600; }
   .tab .tab-count { font-size: 11px; color: #999; }
 
   /* App cards */
@@ -128,35 +127,35 @@
   .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .app-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
   .app-card-product { display: flex; align-items: center; gap: 10px; }
-  .provider-icon { width: 36px; height: 36px; border-radius: 8px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #666; }
+  .provider-icon { width: 36px; height: 36px; border-radius: 8px; background: #fff; border: 1px solid #e8e8e8; object-fit: contain; padding: 4px; }
   .app-card-product h4 { font-size: 14px; font-weight: 600; }
   .app-card-product .product-type { font-size: 12px; color: #999; }
   .status-badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
   .status-badge.approved { background: #e8f5e9; color: #2e7d32; }
   .status-badge.rejected { background: #ffebee; color: #c62828; }
   .status-badge.pending { background: #fff3e0; color: #e65100; }
-  .status-badge.reward-ready { background: #e3f2fd; color: #1565c0; }
+  .status-badge.reward-ready { background: #e3f2fd; color: #2257B8; }
   .app-card-details { font-size: 13px; color: #666; margin-top: 8px; }
   .reward-line { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; }
   .reward-line .reward-status { font-weight: 500; }
-  .reward-line .reward-status.ready { color: #1565c0; }
+  .reward-line .reward-status.ready { color: #2257B8; }
   .reward-line .reward-status.ineligible { color: #c62828; }
   .reward-line .reward-status.pending { color: #e65100; }
 
   /* CHC Banner (CORE-4486) */
   .chc-banner { background: linear-gradient(135deg, #f0f7ff 0%, #e3eeff 100%); border: 1px solid #c5d9f8; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: center; }
-  .chc-banner-icon { width: 48px; height: 48px; border-radius: 12px; background: #0066cc; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-  .chc-banner-content h4 { font-size: 15px; font-weight: 600; color: #004999; margin-bottom: 4px; }
+  .chc-banner-icon { width: 48px; height: 48px; border-radius: 12px; background: #2257B8; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .chc-banner-content h4 { font-size: 15px; font-weight: 600; color: #2257B8; margin-bottom: 4px; }
   .chc-banner-content p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
-  .chc-banner-cta { display: inline-block; background: #0066cc; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
-  .chc-banner-cta:hover { background: #004999; }
+  .chc-banner-cta { display: inline-block; background: #2257B8; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+  .chc-banner-cta:hover { background: #1a4494; }
 
   /* Empty state */
   .empty-state { text-align: center; padding: 40px 20px; }
   .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
   .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
   .empty-state p { font-size: 14px; color: #999; margin-bottom: 16px; }
-  .empty-state a { color: #0066cc; font-weight: 500; text-decoration: none; }
+  .empty-state a { color: #2257B8; font-weight: 500; text-decoration: none; }
 
   /* Desktop */
   @media (min-width: 768px) {
@@ -172,7 +171,7 @@
 </head>
 <body>
 <div id="pw-gate"><div class="pw-box">
-  <div class="pw-logo"><span>Money</span><span>Hero</span></div>
+  <div class="pw-logo"><img src="assets/moneyhero-logo.svg" alt="MoneyHero"></div>
   <p>Internal Prototype</p>
   <form onsubmit="return pwCheck()">
     <input type="password" id="pw-in" placeholder="Enter password" autofocus>
@@ -184,7 +183,7 @@
 
 <!-- Top Nav -->
 <nav class="top-nav">
-  <div class="logo"><span>Money</span><span>Hero</span></div>
+  <div class="logo"><img src="assets/moneyhero-logo.svg" alt="MoneyHero"></div>
   <div class="nav-items">
     <a href="#">Credit Cards</a>
     <a href="#">Loans</a>
@@ -402,7 +401,7 @@
     <div class="app-card">
       <div class="app-card-header">
         <div class="app-card-product">
-          <div class="provider-icon">Citi</div>
+          <img class="provider-icon" src="assets/provider-logos/citi.webp" alt="Citi">
           <div>
             <h4>Citi PremierMiles Card</h4>
             <div class="product-type">Credit Card</div>
@@ -420,7 +419,7 @@
     <div class="app-card">
       <div class="app-card-header">
         <div class="app-card-product">
-          <div class="provider-icon">SC</div>
+          <img class="provider-icon" src="assets/provider-logos/standard-chartered.webp" alt="Standard Chartered">
           <div>
             <h4>Standard Chartered Cathay Mastercard</h4>
             <div class="product-type">Credit Card</div>
@@ -448,7 +447,7 @@
     <div class="app-card">
       <div class="app-card-header">
         <div class="app-card-product">
-          <div class="provider-icon">DBS</div>
+          <img class="provider-icon" src="assets/provider-logos/dbs.webp" alt="DBS">
           <div>
             <h4>DBS Black World Mastercard</h4>
             <div class="product-type">Credit Card</div>
