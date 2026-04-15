@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoneyHero Member Dashboard — Prototype</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+  /* Nav */
+  .top-nav { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .top-nav .logo { font-weight: 800; font-size: 18px; }
+  .top-nav .logo span:first-child { color: #e4002b; }
+  .top-nav .logo span:last-child { color: #00b2a9; }
+  .nav-items { display: flex; gap: 16px; align-items: center; font-size: 13px; color: #666; }
+  .nav-items a { text-decoration: none; color: #666; }
+  .nav-items a:hover { color: #1a1a1a; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #00b2a9; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  /* Prototype controls */
+  .controls { background: #1a1a1a; color: #fff; padding: 16px; text-align: center; position: sticky; top: 53px; z-index: 99; }
+  .controls h2 { font-size: 14px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; }
+  .tab-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .tab-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #555; background: transparent; color: #ccc; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .tab-btn:hover { border-color: #00b2a9; color: #fff; }
+  .tab-btn.active { background: #00b2a9; border-color: #00b2a9; color: #fff; }
+  .state-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .state-btn { padding: 6px 12px; border-radius: 16px; border: 1px solid #444; background: transparent; color: #aaa; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .state-btn:hover { border-color: #f0c040; color: #fff; }
+  .state-btn.active { background: #f0c040; border-color: #f0c040; color: #1a1a1a; }
+
+  /* Page container */
+  .page { max-width: 480px; margin: 0 auto; padding: 0 0 80px 0; display: none; }
+  .page.active { display: block; }
+
+  /* Member header */
+  .member-header { background: linear-gradient(135deg, #0066cc 0%, #004999 100%); color: #fff; padding: 24px 20px; }
+  .member-header .label { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
+  .member-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
+  .member-header .email { font-size: 14px; opacity: 0.7; }
+
+  /* Cards */
+  .card-stack { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer; transition: box-shadow 0.2s; position: relative; }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; }
+  .card-icon.reward { background: #e8f5e9; color: #2e7d32; }
+  .card-icon.credit { background: #e3f2fd; color: #1565c0; }
+  .card-icon.profile { background: #f3e5f5; color: #7b1fa2; }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .card p { font-size: 14px; color: #666; line-height: 1.5; }
+  .card .arrow { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #ccc; font-size: 18px; }
+  .card .badge { display: inline-block; background: #e4002b; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+
+  /* Summary card */
+  .summary-stats { display: flex; gap: 16px; margin-top: 12px; }
+  .stat { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #444; }
+  .stat-icon { font-size: 16px; }
+
+  /* Credit score module */
+  .score-card { background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%); border: 1px solid #dde3f8; }
+  .score-display { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#1565c0 0% 72%, #e0e0e0 72% 100%); display: flex; align-items: center; justify-content: center; position: relative; }
+  .score-circle-inner { width: 64px; height: 64px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .score-number { font-size: 22px; font-weight: 700; color: #1565c0; line-height: 1; }
+  .score-label { font-size: 9px; color: #999; text-transform: uppercase; }
+  .score-meta h3 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+  .score-delta { font-size: 13px; color: #2e7d32; font-weight: 500; margin-top: 2px; }
+  .score-updated { font-size: 12px; color: #999; margin-top: 2px; }
+  .score-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .score-actions a { font-size: 13px; color: #1565c0; text-decoration: none; font-weight: 500; }
+  .score-actions a:hover { text-decoration: underline; }
+  .odds-teaser { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 13px; color: #5d4037; display: flex; align-items: center; gap: 8px; }
+  .odds-teaser .odds-badge { background: #2e7d32; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+
+  /* CHC CTA card (non-member) */
+  .chc-cta-card { background: linear-gradient(135deg, #004999 0%, #0066cc 100%); color: #fff; border: none; }
+  .chc-cta-card h3 { color: #fff; font-size: 18px; }
+  .chc-cta-card p { color: rgba(255,255,255,0.85); }
+  .chc-cta-card .tu-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; }
+  .chc-cta-card .cta-btn { display: inline-block; margin-top: 14px; background: #fff; color: #004999; font-weight: 600; font-size: 14px; padding: 10px 24px; border-radius: 8px; text-decoration: none; }
+
+  /* Carousel */
+  .carousel { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; }
+  .carousel-track { display: flex; transition: transform 0.4s ease; }
+  .carousel-slide { min-width: 100%; }
+  .carousel-slide img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .carousel-banner { height: 160px; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .carousel-banner.blue { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+  .carousel-banner.green { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+  .carousel-banner.orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+  .carousel-banner-content { text-align: center; }
+  .carousel-banner-content h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .carousel-banner-content p { font-size: 13px; color: #555; }
+  .carousel-dots { display: flex; justify-content: center; gap: 6px; padding: 12px; }
+  .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; border: none; cursor: pointer; transition: background 0.2s; }
+  .carousel-dot.active { background: #0066cc; }
+
+  /* Logout */
+  .logout-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 16px 20px; text-align: center; color: #e4002b; font-size: 15px; font-weight: 500; cursor: pointer; width: 100%; transition: background 0.2s; }
+  .logout-btn:hover { background: #fef2f2; }
+
+  /* Applications & Rewards detail page */
+  .detail-header { background: #fff; padding: 16px 20px; border-bottom: 1px solid #e0e0e0; }
+  .back-link { font-size: 14px; color: #0066cc; text-decoration: none; display: flex; align-items: center; gap: 4px; margin-bottom: 12px; cursor: pointer; }
+  .detail-header h2 { font-size: 20px; font-weight: 600; }
+
+  /* Tabs */
+  .tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; }
+  .tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab.active { color: #0066cc; border-bottom-color: #0066cc; font-weight: 600; }
+  .tab .tab-count { font-size: 11px; color: #999; }
+
+  /* App cards */
+  .app-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .app-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .app-card-product { display: flex; align-items: center; gap: 10px; }
+  .provider-icon { width: 36px; height: 36px; border-radius: 8px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #666; }
+  .app-card-product h4 { font-size: 14px; font-weight: 600; }
+  .app-card-product .product-type { font-size: 12px; color: #999; }
+  .status-badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
+  .status-badge.approved { background: #e8f5e9; color: #2e7d32; }
+  .status-badge.rejected { background: #ffebee; color: #c62828; }
+  .status-badge.pending { background: #fff3e0; color: #e65100; }
+  .status-badge.reward-ready { background: #e3f2fd; color: #1565c0; }
+  .app-card-details { font-size: 13px; color: #666; margin-top: 8px; }
+  .reward-line { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; }
+  .reward-line .reward-status { font-weight: 500; }
+  .reward-line .reward-status.ready { color: #1565c0; }
+  .reward-line .reward-status.ineligible { color: #c62828; }
+  .reward-line .reward-status.pending { color: #e65100; }
+
+  /* CHC Banner (CORE-4486) */
+  .chc-banner { background: linear-gradient(135deg, #f0f7ff 0%, #e3eeff 100%); border: 1px solid #c5d9f8; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: center; }
+  .chc-banner-icon { width: 48px; height: 48px; border-radius: 12px; background: #0066cc; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .chc-banner-content h4 { font-size: 15px; font-weight: 600; color: #004999; margin-bottom: 4px; }
+  .chc-banner-content p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
+  .chc-banner-cta { display: inline-block; background: #0066cc; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+  .chc-banner-cta:hover { background: #004999; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 40px 20px; }
+  .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .empty-state p { font-size: 14px; color: #999; margin-bottom: 16px; }
+  .empty-state a { color: #0066cc; font-weight: 500; text-decoration: none; }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    .page { max-width: 560px; }
+    .carousel-banner { height: 200px; }
+  }
+
+  /* Annotations */
+  .annotation { background: #fffde7; border-left: 3px solid #f0c040; padding: 10px 14px; margin: 0 16px; border-radius: 0 8px 8px 0; font-size: 12px; color: #5d4037; line-height: 1.5; }
+  .annotation strong { color: #e65100; }
+  .annotation-inline { display: inline-block; background: #f0c040; color: #1a1a1a; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="top-nav">
+  <div class="logo"><span>Money</span><span>Hero</span></div>
+  <div class="nav-items">
+    <a href="#">Credit Cards</a>
+    <a href="#">Loans</a>
+    <a href="#">Insurance</a>
+    <div class="avatar" title="Account">J</div>
+  </div>
+</nav>
+
+<!-- Prototype Controls -->
+<div class="controls">
+  <h2>Prototype — Member Dashboard</h2>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="showPage('phase1a')">Phase 1a: Current Tickets</button>
+    <button class="tab-btn" onclick="showPage('phase1b')">Phase 1b: Charter Vision</button>
+    <button class="tab-btn" onclick="showPage('rewards-detail')">Applications & Rewards</button>
+  </div>
+  <div class="state-row" id="state-controls">
+    <button class="state-btn active" onclick="setUserState('non-chc')">Non-CHC Member</button>
+    <button class="state-btn" onclick="setUserState('chc')">CHC Member</button>
+    <button class="state-btn" onclick="setUserState('chc-consented')">CHC + Odds Consent</button>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PHASE 1A: CURRENT TICKETS                    -->
+<!-- ============================================ -->
+<div class="page active" id="page-phase1a">
+  <div class="member-header">
+    <div class="label">Account</div>
+    <h1>Hello, Jane</h1>
+    <div class="email">janedoe@email.com</div>
+  </div>
+
+  <div class="annotation" style="margin-top: 16px;">
+    <strong>CORE-4483:</strong> Rename "Reward Centre" → "Account". Cards below match existing design pattern. Module order: Rewards → CHC → Carousel.
+  </div>
+
+  <div class="card-stack">
+    <!-- My Reward card -->
+    <div class="card" onclick="showPage('rewards-detail')">
+      <div class="card-icon reward">🎁</div>
+      <h3>My Reward <span class="badge">1 new</span></h3>
+      <p>Check your redeemed rewards and available perks.</p>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- My Credit Score card -->
+    <div class="card" id="p1a-credit-card">
+      <!-- Content set by user state -->
+    </div>
+
+    <!-- Carousel -->
+    <div class="annotation">
+      <strong>CORE-4489:</strong> Configurable carousel. 0-5 banners per locale. Managed via config (Strapi TBC). Hidden if 0 banners.
+    </div>
+    <div class="carousel">
+      <div class="carousel-track" id="carousel-1a">
+        <div class="carousel-slide">
+          <div class="carousel-banner blue">
+            <div class="carousel-banner-content">
+              <h4>Exclusive Credit Card Offers</h4>
+              <p>Compare 50+ cards and earn up to HK$2,800 in rewards</p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-banner green">
+            <div class="carousel-banner-content">
+              <h4>Personal Loan Comparison</h4>
+              <p>Find the best rates from 15+ lenders. Apply in minutes.</p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-banner orange">
+            <div class="carousel-banner-content">
+              <h4>Travel Insurance from HK$48</h4>
+              <p>Going somewhere? Compare plans before you fly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-dots">
+        <button class="carousel-dot active" onclick="goToSlide('carousel-1a', 0, this)"></button>
+        <button class="carousel-dot" onclick="goToSlide('carousel-1a', 1, this)"></button>
+        <button class="carousel-dot" onclick="goToSlide('carousel-1a', 2, this)"></button>
+      </div>
+    </div>
+
+    <!-- Log Out -->
+    <button class="logout-btn">Log Out</button>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PHASE 1B: CHARTER VISION                     -->
+<!-- ============================================ -->
+<div class="page" id="page-phase1b">
+  <div class="member-header">
+    <div class="label">My Dashboard</div>
+    <h1>Hello, Jane</h1>
+    <div class="email">janedoe@email.com</div>
+  </div>
+
+  <div class="annotation" style="margin-top: 16px;">
+    <strong>Phase 1b (new scope):</strong> Dashboard rename, summary counts, credit score display, approval odds teaser, quick links, profile card.
+  </div>
+
+  <div class="card-stack">
+    <!-- Applications & Rewards summary -->
+    <div class="card" onclick="showPage('rewards-detail')">
+      <div class="card-icon reward">🎁</div>
+      <h3>Applications & Rewards</h3>
+      <div class="summary-stats">
+        <div class="stat"><span class="stat-icon">📋</span> 2 in progress</div>
+        <div class="stat"><span class="stat-icon">🎁</span> 1 reward ready</div>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- Credit Score Module -->
+    <div id="p1b-credit-module">
+      <!-- Content set by user state -->
+    </div>
+
+    <!-- Carousel -->
+    <div class="carousel">
+      <div class="carousel-track" id="carousel-1b">
+        <div class="carousel-slide">
+          <div class="carousel-banner blue">
+            <div class="carousel-banner-content">
+              <h4>Exclusive Credit Card Offers</h4>
+              <p>Compare 50+ cards and earn up to HK$2,800 in rewards</p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-banner green">
+            <div class="carousel-banner-content">
+              <h4>Personal Loan Comparison</h4>
+              <p>Find the best rates from 15+ lenders. Apply in minutes.</p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-banner orange">
+            <div class="carousel-banner-content">
+              <h4>Travel Insurance from HK$48</h4>
+              <p>Going somewhere? Compare plans before you fly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-dots">
+        <button class="carousel-dot active" onclick="goToSlide('carousel-1b', 0, this)"></button>
+        <button class="carousel-dot" onclick="goToSlide('carousel-1b', 1, this)"></button>
+        <button class="carousel-dot" onclick="goToSlide('carousel-1b', 2, this)"></button>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+      <div class="card" style="padding: 14px; text-align: center; cursor: pointer;">
+        <div style="font-size: 24px; margin-bottom: 6px;">💳</div>
+        <div style="font-size: 12px; font-weight: 500;">Cards</div>
+      </div>
+      <div class="card" style="padding: 14px; text-align: center; cursor: pointer;">
+        <div style="font-size: 24px; margin-bottom: 6px;">🏦</div>
+        <div style="font-size: 12px; font-weight: 500;">Loans</div>
+      </div>
+      <div class="card" style="padding: 14px; text-align: center; cursor: pointer;">
+        <div style="font-size: 24px; margin-bottom: 6px;">🛡️</div>
+        <div style="font-size: 12px; font-weight: 500;">Insurance</div>
+      </div>
+      <div class="card" style="padding: 14px; text-align: center; cursor: pointer;">
+        <div style="font-size: 24px; margin-bottom: 6px;">📊</div>
+        <div style="font-size: 12px; font-weight: 500;">Credit Report</div>
+      </div>
+    </div>
+
+    <!-- Profile & Preferences -->
+    <div class="card">
+      <div class="card-icon profile">⚙️</div>
+      <h3>Profile & Preferences</h3>
+      <p>Manage your phone number and notification settings.</p>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- Log Out -->
+    <button class="logout-btn">Log Out</button>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- APPLICATIONS & REWARDS DETAIL PAGE           -->
+<!-- ============================================ -->
+<div class="page" id="page-rewards-detail">
+  <div class="detail-header">
+    <a class="back-link" onclick="showPage(lastDashboard)">← Back to Dashboard</a>
+    <h2>My Rewards</h2>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">Track Rewards <div class="tab-count">(3)</div></div>
+    <div class="tab">Submit Form <div class="tab-count">(1)</div></div>
+    <div class="tab">Earned <div class="tab-count">(0)</div></div>
+  </div>
+
+  <div class="annotation" style="margin-top: 16px;">
+    <strong>CORE-4486:</strong> CHC banner placed after the first negative-outcome card. If no negatives, banner goes at top. Hidden if CHC active.
+  </div>
+
+  <div class="app-list" id="app-list">
+    <!-- App Card: Approved -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-product">
+          <div class="provider-icon">Citi</div>
+          <div>
+            <h4>Citi PremierMiles Card</h4>
+            <div class="product-type">Credit Card</div>
+          </div>
+        </div>
+        <span class="status-badge approved">Approved</span>
+      </div>
+      <div class="app-card-details">Applied: 2026-03-15</div>
+      <div class="reward-line">
+        🎁 <span class="reward-status ready">Reward ready to claim — Submit form by 2026-04-23</span>
+      </div>
+    </div>
+
+    <!-- App Card: Rejected -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-product">
+          <div class="provider-icon">SC</div>
+          <div>
+            <h4>Standard Chartered Cathay Mastercard</h4>
+            <div class="product-type">Credit Card</div>
+          </div>
+        </div>
+        <span class="status-badge rejected">未能核實獎賞資格</span>
+      </div>
+      <div class="app-card-details">Applied: 2026-02-10</div>
+      <div class="reward-line">
+        🎁 <span class="reward-status ineligible">Reward ineligible</span>
+      </div>
+    </div>
+
+    <!-- CHC Contextual Banner (CORE-4486) — after first negative card -->
+    <div class="chc-banner" id="chc-contextual-banner">
+      <div class="chc-banner-icon">📊</div>
+      <div class="chc-banner-content">
+        <h4>Understand What Lenders See</h4>
+        <p>Your credit report shows factors that may affect application outcomes — check it anytime to stay informed.</p>
+        <a class="chc-banner-cta" href="#">View My Credit Report →</a>
+      </div>
+    </div>
+
+    <!-- App Card: Pending -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-product">
+          <div class="provider-icon">DBS</div>
+          <div>
+            <h4>DBS Black World Mastercard</h4>
+            <div class="product-type">Credit Card</div>
+          </div>
+        </div>
+        <span class="status-badge pending">Processing</span>
+      </div>
+      <div class="app-card-details">Applied: 2026-04-10</div>
+      <div class="reward-line">
+        🎁 <span class="reward-status pending">Reward pending verification</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentState = 'non-chc';
+  let lastDashboard = 'phase1a';
+
+  // Carousel
+  function goToSlide(trackId, index, dotEl) {
+    const track = document.getElementById(trackId);
+    track.style.transform = `translateX(-${index * 100}%)`;
+    const dots = dotEl.parentElement.querySelectorAll('.carousel-dot');
+    dots.forEach(d => d.classList.remove('active'));
+    dotEl.classList.add('active');
+  }
+
+  // Auto-rotate carousels
+  let carouselIntervals = {};
+  function startCarousel(trackId) {
+    if (carouselIntervals[trackId]) clearInterval(carouselIntervals[trackId]);
+    let idx = 0;
+    carouselIntervals[trackId] = setInterval(() => {
+      idx = (idx + 1) % 3;
+      const track = document.getElementById(trackId);
+      if (!track) return;
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      const dots = track.parentElement.querySelectorAll('.carousel-dot');
+      dots.forEach(d => d.classList.remove('active'));
+      dots[idx]?.classList.add('active');
+    }, 5000);
+  }
+  startCarousel('carousel-1a');
+  startCarousel('carousel-1b');
+
+  // Page switching
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      if ((pageId === 'phase1a' && b.textContent.includes('Phase 1a')) ||
+          (pageId === 'phase1b' && b.textContent.includes('Phase 1b')) ||
+          (pageId === 'rewards-detail' && b.textContent.includes('Applications'))) {
+        b.classList.add('active');
+      }
+    });
+    if (pageId === 'phase1a' || pageId === 'phase1b') {
+      lastDashboard = pageId;
+    }
+    // Show/hide state controls based on page
+    document.getElementById('state-controls').style.display =
+      pageId === 'rewards-detail' ? 'flex' : 'flex';
+    window.scrollTo(0, 0);
+  }
+
+  // User state
+  function setUserState(state) {
+    currentState = state;
+    document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.state-btn').forEach(b => {
+      if ((state === 'non-chc' && b.textContent.includes('Non-CHC')) ||
+          (state === 'chc' && b.textContent === 'CHC Member') ||
+          (state === 'chc-consented' && b.textContent.includes('Odds'))) {
+        b.classList.add('active');
+      }
+    });
+    renderCreditCards();
+    renderContextualBanner();
+  }
+
+  function renderCreditCards() {
+    // Phase 1a card
+    const p1a = document.getElementById('p1a-credit-card');
+    if (currentState === 'non-chc') {
+      p1a.className = 'card';
+      p1a.innerHTML = `
+        <div class="card-icon credit">🔒</div>
+        <h3>My Credit Score</h3>
+        <p>Monitor your credit score and get personalised tips to boost your financial health.</p>
+        <span class="arrow">›</span>
+      `;
+    } else {
+      p1a.className = 'card';
+      p1a.innerHTML = `
+        <div class="card-icon credit">📊</div>
+        <h3>My Credit Score</h3>
+        <p>View your credit report and monitor changes to your score.</p>
+        <span class="arrow">›</span>
+        <div style="margin-top:8px;font-size:12px;color:#999;">Tapping will prompt 2FA verification</div>
+      `;
+    }
+
+    // Phase 1b module
+    const p1b = document.getElementById('p1b-credit-module');
+    if (currentState === 'non-chc') {
+      p1b.innerHTML = `
+        <div class="card chc-cta-card">
+          <h3>See Your Free Credit Score</h3>
+          <p>Understand what lenders see and find products that match your profile.</p>
+          <div class="tu-badge">🔒 Powered by TransUnion</div>
+          <a class="cta-btn" href="#">Get Started →</a>
+        </div>
+      `;
+    } else if (currentState === 'chc') {
+      p1b.innerHTML = `
+        <div class="card score-card">
+          <div class="score-display">
+            <div class="score-circle">
+              <div class="score-circle-inner">
+                <div class="score-number">720</div>
+                <div class="score-label">Score</div>
+              </div>
+            </div>
+            <div class="score-meta">
+              <h3>Your Credit Score</h3>
+              <div class="score-delta">↑ +15 since March</div>
+              <div class="score-updated">Last updated: 1 Apr 2026</div>
+              <div class="score-actions">
+                <a href="#">View Full Report →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (currentState === 'chc-consented') {
+      p1b.innerHTML = `
+        <div class="card score-card">
+          <div class="score-display">
+            <div class="score-circle">
+              <div class="score-circle-inner">
+                <div class="score-number">720</div>
+                <div class="score-label">Score</div>
+              </div>
+            </div>
+            <div class="score-meta">
+              <h3>Your Credit Score</h3>
+              <div class="score-delta">↑ +15 since March</div>
+              <div class="score-updated">Last updated: 1 Apr 2026</div>
+              <div class="score-actions">
+                <a href="#">View Report →</a>
+                <span style="color:#ddd;">|</span>
+                <a href="#">See Loans →</a>
+              </div>
+            </div>
+          </div>
+          <div class="odds-teaser">
+            <span class="odds-badge">HIGH</span>
+            <span>You may have high approval odds on <strong>3 personal loans</strong></span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function renderContextualBanner() {
+    const banner = document.getElementById('chc-contextual-banner');
+    if (currentState === 'non-chc') {
+      banner.style.display = 'flex';
+    } else {
+      // CHC active = hide banner (per CORE-4486)
+      banner.style.display = 'none';
+    }
+  }
+
+  // Initial render
+  renderCreditCards();
+  renderContextualBanner();
+</script>
+</body>
+</html>
