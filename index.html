@@ -7,6 +7,17 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; }
+  #pw-gate { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+  .pw-box { text-align: center; max-width: 340px; padding: 40px 20px; }
+  .pw-box .pw-logo { font-weight: 800; font-size: 24px; margin-bottom: 8px; }
+  .pw-box .pw-logo span:first-child { color: #e4002b; }
+  .pw-box .pw-logo span:last-child { color: #00b2a9; }
+  .pw-box p { font-size: 14px; color: #666; margin-bottom: 20px; }
+  .pw-box input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; text-align: center; outline: none; }
+  .pw-box input:focus { border-color: #0066cc; }
+  .pw-box button { width: 100%; padding: 12px; margin-top: 12px; background: #0066cc; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .pw-box button:hover { background: #004999; }
+  .pw-err { color: #e4002b; font-size: 13px; margin-top: 8px; min-height: 20px; }
 
   /* Nav */
   .top-nav { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
@@ -160,6 +171,16 @@
 </style>
 </head>
 <body>
+<div id="pw-gate"><div class="pw-box">
+  <div class="pw-logo"><span>Money</span><span>Hero</span></div>
+  <p>Internal Prototype</p>
+  <form onsubmit="return pwCheck()">
+    <input type="password" id="pw-in" placeholder="Enter password" autofocus>
+    <button type="submit">View Prototype</button>
+  </form>
+  <div class="pw-err" id="pw-err"></div>
+</div></div>
+<div id="pw-app" style="display:none">
 
 <!-- Top Nav -->
 <nav class="top-nav">
@@ -607,6 +628,22 @@
   // Initial render
   renderCreditCards();
   renderContextualBanner();
+  function pwCheck() {
+    if (document.getElementById('pw-in').value === 'chc-moneyhero') {
+      document.getElementById('pw-gate').style.display = 'none';
+      document.getElementById('pw-app').style.display = 'block';
+      sessionStorage.setItem('pw-ok', '1');
+    } else {
+      document.getElementById('pw-err').textContent = 'Incorrect password';
+      document.getElementById('pw-in').value = '';
+    }
+    return false;
+  }
+  if (sessionStorage.getItem('pw-ok') === '1') {
+    document.getElementById('pw-gate').style.display = 'none';
+    document.getElementById('pw-app').style.display = 'block';
+  }
 </script>
+</div>
 </body>
 </html>
